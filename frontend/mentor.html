@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentor List</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url('Screenshot1.jpg');
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            color: white;
+        }
+        table {
+            width: 80%;
+            margin: 50px auto;
+            border-collapse: collapse;
+            color: black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid black;
+        }
+        th {
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>S.No</th>
+                <th>Mentor Name</th>
+                <th>Mentor Email</th>
+                <th>Mentor Experience</th>
+            </tr>
+        </thead>
+        <tbody id="mentorList">
+
+        </tbody>
+    </table>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() { 
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:8080/mentor/getdetails",
+                contentType: "application/json",
+                success: function(response) {
+                    console.log(response);
+                    var tasks = response;
+                    var tableBody = $("#mentorList");
+                    tableBody.empty();
+                    tasks.forEach(function(task, index) {
+                        var row = "<tr>" +
+                            "<td>" + (index + 1) + "</td>" + 
+                            "<td>" + task.name + "</td>" +
+                            "<td>" + task.email + "</td>" +
+                            "<td>" + task.experience + "</td>" +
+                            "</tr>";
+                        tableBody.append(row);
+                    });
+                },
+                error: function(xhr, status, error) {
+                    alert("Error getting mentors. Please try again.");
+                    console.error(error);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

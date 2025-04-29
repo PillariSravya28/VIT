@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background-image: url('Screenshot.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .form-container {
+            text-align: center;
+            width: 60%; 
+            max-width: 400px; 
+        }
+
+        h1 {
+            font-size: 80px; 
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            display: block;
+            width: calc(100% - 40px);
+            padding: 20px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 20px;
+            color: #fff;
+            background-color: #000;
+        }
+
+        .header-link {
+            margin-top: 20px;
+        }
+        .header-link a {
+            display: inline-block;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background-color: #000;
+            color: #fff;
+            font-size: 20px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .header-link a:hover {
+            background-color: #444;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>LOGIN</h1>
+        <form id="loginForm">
+            <input type="email" id="email" placeholder="Username" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <input type="radio" id="teamMember" name="role" value="teammember" required>
+            <label for="teamMember">Team Member</label>
+            <input type="radio" id="teamLeader" name="role" value="teamleader" required>
+            <label for="teamLeader">Team Leader</label>
+        </form>
+    </div>
+    <div class="header-link">
+        <a id="submitBtn" href="#">SUBMIT</a>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#submitBtn').click(function() {
+                sessionStorage.clear();
+                var email = $('#email').val();
+                var password = $('#password').val();
+                var position = $('input[name="role"]:checked').val();
+    
+
+                if(email.trim() === '' || password.trim() === '' || position.trim()==='') {
+                    alert('Please fill in all the fields.');
+                    return;
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'http://localhost:8080/user/login',
+                    contentType: 'application/json',
+                    data: JSON.stringify({email: email,password: password,position: position}),
+                    success: function(response){
+                        if(response === 'User not registered.') {
+                            alert(response);
+                            window.location.assign('signup.html');
+                        } 
+                        else if(response === 'Incorrect password.') {
+                            alert(response);
+                        }
+                        else if(response === 'position mismatch'){
+                            alert("You are not a " + position);
+                        }
+                        else {
+                            sessionStorage.setItem('email', email);
+                            sessionStorage.setItem('position',position);
+                            alert('Login successful.');
+                            if(position === 'teammember')
+                                window.location.assign('header.html');
+                            else    
+                                window.location.assign('header2.html');
+                        }
+                    },
+                    error: function(xhr, status, error){
+                        alert('Something went wrong. Please try again.');
+                        console.error(error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

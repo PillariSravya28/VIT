@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentor Registration</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background-image: url('Screenshot.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .mentor-form {
+            text-align: center;
+            width: 60%;
+            max-width: 400px; 
+            margin: auto; 
+        }
+
+        input[type="text"],
+        input[type="email"],
+        textarea {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            color: #000; 
+            background-color: #fff; 
+        }
+        h1 {
+            font-size: 50px; 
+        }
+        button {
+            display: block;
+            width: 90%;
+            padding: 20px;
+            border: none;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 20px;
+            color: #fff;
+            background-color: #000;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #444;
+        }
+    </style>
+</head>
+<body>
+    <div class="mentor-form">
+        <h1>MENTOR REGISTRATION</h1>
+        <form id="mentorForm">
+            <input type="text" id="name" placeholder="Your Name" required>
+            <input type="email" id="email" placeholder="Your Email" required>
+            <textarea id="experience" placeholder="Your Experience"></textarea>
+            <button id = "mentorsub" type="submit">Register</button>
+        </form>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() { 
+            $("#mentorsub").click(function(e) {
+                e.preventDefault();
+                var name = document.getElementById("name").value;
+                var email = document.getElementById("email").value;
+                var experience = document.getElementById("experience").value;
+                if (name === '' || email === '' || experience === '') {
+                    alert("Please fill out the fields");
+                    return; 
+                }
+                if(!validateEmail(email)) {
+                    alert('Please enter a valid email address.');
+                    return;
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "http://localhost:8080/mentor/post",
+                    contentType: "application/x-www-form-urlencoded",
+                    data: {name: name, email: email, experience: experience},
+                    success: function(response) {
+                        if(response === 'Registered Successfully!'){
+                            alert(response);
+                            window.location.assign('index.html');
+                        }
+                        else{
+                            alert(response);
+                            location.reload();
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert("Error registering mentor. Please try again.");
+                        console.error(error);
+                    }
+                });
+            });
+        });
+        function validateEmail(email) {
+            var re = /\S+@\S+\.\S+/;
+            return re.test(email);
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Student's Mentor Website</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background-image: url('Screenshot.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        h1 {
+            font-size: 60px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .button-container {
+            text-align: center;
+        }
+
+        .button {
+            display: block;
+            width: 60%; 
+            max-width: 400px; 
+            padding: 30px 70px; 
+            font-size: 30px;
+            margin: 20px 0; 
+            text-decoration: none;
+            color: #fff;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        .mentor-link a {
+            color: #fff;
+            font-size: 24px; 
+            text-decoration: none;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>WELCOME TO STUDENT'S MENTOR PORTAL</h1>
+    <div class="button-container">
+        <a href="login.html" class="button">Login</a>
+        <a href="signup.html" class="button">Sign Up</a>
+    </div>
+    <div class="mentor-link">
+        <a href="mentor_registration.html">Are you a mentor?</a>
+    </div>
+</body>
+</html>

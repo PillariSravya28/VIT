@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            background-image: url('Screenshot.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .form-container {
+            text-align: center;
+            width: 60%; 
+            max-width: 400px; 
+        }
+
+        h1 {
+            font-size: 80px; 
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="email"],
+        button {
+            display: block;
+            width: 100%;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 20px;
+            color: #fff;
+            background-color: #000;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #444;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>SIGN UP</h1>
+        <form id="signupForm">
+            <input type="text" id="fullName" placeholder="Full Name (characters only)" pattern="[A-Za-z ]+" title="Only characters are allowed" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="text" id="newUsername" placeholder="Username" required>
+            <input type="password" id="newPassword" placeholder="Password" required>
+            <input type="radio" id="teamMember" name="role" value="teammember" required>
+            <label for="teamMember">Team Member</label>
+            <input type="radio" id="teamLeader" name="role" value="teamleader" required>
+            <label for="teamLeader">Team Leader</label><br><br>
+            <button type="button" id="submitBtn">Sign Up</button>
+        </form>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#submitBtn').click(function() {
+                sessionStorage.clear();
+                var fullName = $('#fullName').val();
+                var email = $('#email').val();
+                var username = $('#newUsername').val();
+                var password = $('#newPassword').val();
+                var position = $('input[name="role"]:checked').val();
+    
+                if(!validateEmail(email)) {
+                    alert('Please enter a valid email address.');
+                    return;
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: 'http://localhost:8080/user/signup',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ fullName: fullName, email: email, username: username, password: password , position: position}),
+                    success: function(response){
+                        console.log('Success function executed');
+                        if(response == 'User registered successfully!'){
+                            sessionStorage.setItem('email', email);
+                            sessionStorage.setItem('position',position);
+                            if(position=='teamleader'){
+                                $.ajax({
+                                    type: 'POST',
+                                    url: 'http://localhost:8080/team/create/' + email,
+                                    contentType: 'application/json',
+                                    success: function(response) {
+                                        console.log('Team created');
+                                    },
+                                    error: function(xhr, status, error) {
+                                        alert('Something went wrong. Please try again.');
+                                        console.error(error);
+                                        location.reload();
+                                    }
+                                });
+                            }
+                            alert(response);
+                            if(position === 'teammember')
+                                window.location.assign('header.html');
+                            else    
+                                window.location.assign('header2.html');
+                        } 
+                        else{
+                            alert('User already registered.');
+                            console.log('Redirecting to login.html...'); 
+                            window.location.assign('login.html');
+                        }
+                    },
+                    error: function(xhr, status, error){
+                        alert('Something went wrong. Please try again.');
+                        console.error(error);
+                        location.reload();
+                    }
+                });
+            });
+        });
+    
+        function validateEmail(email) {
+            var re = /\S+@\S+\.\S+/;
+            return re.test(email);
+        }
+    </script>    
+
+</body>
+</html>

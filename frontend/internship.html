@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link Table Page</title>
+    <style>
+        body {
+            background-image: url("Screenshot1.jpg");
+            background-size: cover;  
+            background-repeat: no-repeat;
+            background-position: center;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            width: 80%; 
+        }
+        .section {
+            background-color: rgba(255, 255, 255, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            width: 48%;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: center;
+            color: black;
+        }
+        input[type="text"] {
+            width: calc(100% - 80px); 
+            padding: 5px;
+            border: 1px solid black;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        #addBtn {
+            padding: 5px 10px;
+            background-color: black;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #addBtn:hover {
+            background-color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="section" id="tableSection">
+            <h2>Link Table</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sno</th>
+                        <th>Link</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="linkTableBody">
+                    
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section" id="addSection">
+            <h2>Add Link</h2>
+            <input type="text" id="linkInput" placeholder="Enter link">
+            <button id="addBtn" type="submit">Add</button>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() { 
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:8080/intern/getTabledetails",
+                contentType: "application/json",
+                success: function(response) {
+                    console.log(response);
+                    var tasks = response;
+                    var tableBody = $("#linkTableBody");
+                    tableBody.empty();
+                    tasks.forEach(function(task, index) {
+                        if (task.addedby === sessionStorage.getItem('email')) {
+                            var deleteButton = '<button class="delete-btn" data-task-id="' + task.id + '">Delete</button>';
+                        }else{
+                            var deleteButton = '';
+                        }
+                        var row = "<tr>" +
+                            "<td>" + (index + 1) + "</td>" + 
+                            "<td><a href='" + task.link + "' target='_blank'>" + task.link + "</a></td>" + 
+                            "<td>" + deleteButton + "</td>" +
+                            "</tr>";
+                        tableBody.append(row);
+                    });
+                    tableBody.on('click', '.delete-btn', function() {
+                        var taskId = $(this).data('task-id');
+                        deleteTask(taskId);
+                    });
+                },
+                error: function(xhr, status, error) {
+                    alert("Error getting teamname. Please try again.");
+                    console.error(error);
+                }
+            });
+            function deleteTask(tid) {
+                $.ajax({
+                    type: "DELETE",
+                    url: "http://localhost:8080/intern/delete/" + tid,
+                    contentType: "application/json",
+                    success: function() {
+                        location.reload(); 
+                    },
+                    error: function(xhr, status, error) {
+                        alert("Error deleting task. Please try again.");
+                        console.error(error);
+                    }
+                });
+            }
+            function isValidURL(str) {
+               try {
+                   new URL(str);
+                   return true;
+               } catch (error) {
+                   return false;
+               }
+            }
+            $("#addBtn").click(function(e) {
+                e.preventDefault();
+                var link = document.getElementById("linkInput").value;
+                var email = sessionStorage.getItem('email');
+                if (!isValidURL(link)) {
+                    alert("Link is not valid");
+                    location.reload();
+                    return; 
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "http://localhost:8080/intern/add",
+                    contentType: "application/x-www-form-urlencoded",
+                    data: {email: email, link: link },
+                    success: function(response) {
+                        alert(response);
+                        location.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        alert("Error adding link. Please try again.");
+                        console.error(error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

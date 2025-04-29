@@ -1,0 +1,6 @@
+-->Frontend
+    ->npm install -g http-server
+    ->http-server
+-->Backend 
+    ->run main java application
+
